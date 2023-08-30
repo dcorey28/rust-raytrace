@@ -1,37 +1,49 @@
+use std::fs::File;
+use std::io::Write;
+use std::io::BufWriter;
+
 const PPM_IDENTIFIER: &str = "P3";
 
-fn main() {
+fn main() -> std::io::Result<()> {
     let image_width = 256;
     let image_height = 256;
 
-    render_gradient(image_width, image_height);
+
+    let file = File::create("gradient.ppm").expect("failed to create new gradient file");
+    let mut buf = BufWriter::new(file);
+
+    render_gradient(&mut buf, image_width, image_height)?;
+
+    buf.flush()
 }
 
-fn render_gradient(width: i32, height: i32) {
-    print_image_headers(width, height);
-    print_gradient(width, height);
+fn render_gradient(mut writer: impl Write, width: i32, height: i32) -> std::io::Result<()> {
+    write_ppm_headers(&mut writer, width, height)?;
+    calc_gradient(&mut writer, width, height)
 }
 
-fn print_image_headers(width: i32, height: i32) {
+fn write_ppm_headers(mut writer: impl Write, width: i32, height: i32) -> std::io::Result<()> {
     let max_saturation = u8::MAX;
 
-    println!("{PPM_IDENTIFIER}");
-    println!("{width} {height}");
-    println!("{max_saturation}");
+    writeln!(writer, "{PPM_IDENTIFIER}")?;
+    writeln!(writer, "{width} {height}")?;
+    writeln!(writer, "{max_saturation}")
 }
 
-fn print_gradient(width: i32, height: i32) {
+fn calc_gradient(mut writer: impl Write, width: i32, height: i32) -> std::io::Result<()> {
     for row in 0..height {
         for col in 0..width {
             let pixel = calc_gradient_pixel(height, width, row, col);
-            println!("{} {} {}", pixel.0, pixel.1, pixel.2);
+            writeln!(writer, "{} {} {}", pixel.0, pixel.1, pixel.2)?;
         }
     }
+
+    Ok(())
 }
 
 fn calc_gradient_pixel(height: i32, width: i32, row: i32, col: i32) -> (u8, u8, u8) {
     let max_saturation = u8::MAX;
-    
+
     let red = col as f32 / (width - 1) as f32;
     let green = row as f32 / (height - 1) as f32;
     let blue = 0;

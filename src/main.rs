@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::Write;
 use std::io::BufWriter;
+use indicatif::{ProgressBar, ProgressStyle};
 
 const PPM_IDENTIFIER: &str = "P3";
 
@@ -31,12 +32,19 @@ fn write_ppm_headers(mut writer: impl Write, width: i32, height: i32) -> std::io
 }
 
 fn calc_gradient(mut writer: impl Write, width: i32, height: i32) -> std::io::Result<()> {
+    let progress = ProgressBar::new((width * height) as u64);
+    progress.set_style(ProgressStyle::with_template("{msg} {wide_bar:.Magenta}{spinner} {percent}% eta:[{eta_precise}]").unwrap());
+    progress.set_message("rendering");
+
     for row in 0..height {
         for col in 0..width {
             let pixel = calc_gradient_pixel(height, width, row, col);
             writeln!(writer, "{} {} {}", pixel.0, pixel.1, pixel.2)?;
+            progress.inc(1);
         }
     }
+
+    progress.finish_with_message("rendering finished");
 
     Ok(())
 }

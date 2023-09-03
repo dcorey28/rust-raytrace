@@ -3,12 +3,13 @@ use std::io::Write;
 use std::io::BufWriter;
 use indicatif::{ProgressBar, ProgressStyle};
 
+mod vectors;
+
 const PPM_IDENTIFIER: &str = "P3";
 
 fn main() -> std::io::Result<()> {
     let image_width = 256;
     let image_height = 256;
-
 
     let file = File::create("gradient.ppm").expect("failed to create new gradient file");
     let mut buf = BufWriter::new(file);

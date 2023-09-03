@@ -1,40 +1,41 @@
-use std::ops;
 use num;
+use std::ops;
 
-pub trait Number: 
-    num::Num +
-    num::NumCast +
-    Clone + 
-    Copy + 
-    ops::Add +
-    ops::AddAssign +
-    ops::Sub +
-    ops::SubAssign +
-    ops::Mul + 
-    ops::MulAssign +
-    ops::Div +
-    ops::DivAssign +
-    ops::Neg
-{}
+pub trait Number:
+    num::Num
+    + num::NumCast
+    + Clone
+    + Copy
+    + ops::Add
+    + ops::AddAssign
+    + ops::Sub
+    + ops::SubAssign
+    + ops::Mul
+    + ops::MulAssign
+    + ops::Div
+    + ops::DivAssign
+    + ops::Neg
+{
+}
 
-impl<N> Number for N where 
-    N: num::Num +
-    num::NumCast +
-    Clone + 
-    Copy + 
-    ops::Add +
-    ops::AddAssign +
-    ops::Sub +
-    ops::SubAssign +
-    ops::Mul + 
-    ops::MulAssign +
-    ops::Div +
-    ops::DivAssign +
-    ops::Neg
-{}
+impl<N> Number for N where
+    N: num::Num
+        + num::NumCast
+        + Clone
+        + Copy
+        + ops::Add
+        + ops::AddAssign
+        + ops::Sub
+        + ops::SubAssign
+        + ops::Mul
+        + ops::MulAssign
+        + ops::Div
+        + ops::DivAssign
+        + ops::Neg
+{
+}
 
-#[derive(PartialEq)]
-#[derive(Debug)]
+#[derive(PartialEq, Debug)]
 pub struct Vec3<N: Number> {
     pub x: N,
     pub y: N,
@@ -60,7 +61,7 @@ impl<N: Number> ops::Add for Vec3<N> {
     type Output = Self;
 
     fn add(self, other: Self) -> Self::Output {
-        Self{
+        Self {
             x: self.x + other.x,
             y: self.y + other.y,
             z: self.z + other.z,
@@ -82,7 +83,7 @@ impl<N: Number> ops::Sub for Vec3<N> {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self::Output {
-        Self{
+        Self {
             x: self.x - other.x,
             y: self.y - other.y,
             z: self.z - other.z,
@@ -104,7 +105,7 @@ impl<N: Number> ops::Div<N> for Vec3<N> {
     type Output = Self;
 
     fn div(self, scalar: N) -> Self {
-        Self{
+        Self {
             x: self.x / scalar,
             y: self.y / scalar,
             z: self.z / scalar,
@@ -126,7 +127,7 @@ impl<N: Number> ops::Mul<N> for Vec3<N> {
     type Output = Self;
 
     fn mul(self, scalar: N) -> Self {
-        Self{
+        Self {
             x: self.x * scalar,
             y: self.y * scalar,
             z: self.z * scalar,
@@ -157,7 +158,7 @@ impl<N: Number> ops::Neg for Vec3<N> {
     type Output = Self;
 
     fn neg(self) -> Self::Output {
-        Self{
+        Self {
             // We can't just negate each field with `-self.x` because I can't figure
             // how to get the compiler to turn `<N as ops::Neg>::Output` back into `N`.
             x: N::zero() - self.x,
@@ -173,23 +174,11 @@ mod tests {
 
     #[test]
     fn test_add() {
-        let a = Vec3{
-            x: 1, 
-            y: 2, 
-            z: 3,
-        };
+        let a = Vec3 { x: 1, y: 2, z: 3 };
 
-        let b = Vec3{
-            x: 4, 
-            y: 5, 
-            z: 6,
-        };
+        let b = Vec3 { x: 4, y: 5, z: 6 };
 
-        let expected = Vec3{
-            x: 5,
-            y: 7,
-            z: 9,
-        };
+        let expected = Vec3 { x: 5, y: 7, z: 9 };
 
         let actual = a + b;
 
@@ -198,23 +187,11 @@ mod tests {
 
     #[test]
     fn test_add_assign() {
-        let mut a = Vec3{
-            x: 1, 
-            y: 2, 
-            z: 3,
-        };
+        let mut a = Vec3 { x: 1, y: 2, z: 3 };
 
-        let b = Vec3{
-            x: 4, 
-            y: 5, 
-            z: 6,
-        };
+        let b = Vec3 { x: 4, y: 5, z: 6 };
 
-        let expected = Vec3{
-            x: 5,
-            y: 7,
-            z: 9,
-        };
+        let expected = Vec3 { x: 5, y: 7, z: 9 };
 
         a += b;
 
@@ -223,19 +200,11 @@ mod tests {
 
     #[test]
     fn test_sub() {
-        let a = Vec3{
-            x: 3, 
-            y: 2, 
-            z: 1,
-        };
+        let a = Vec3 { x: 3, y: 2, z: 1 };
 
-        let b = Vec3{
-            x: 4, 
-            y: 5, 
-            z: 6,
-        };
+        let b = Vec3 { x: 4, y: 5, z: 6 };
 
-        let expected = Vec3{
+        let expected = Vec3 {
             x: -1,
             y: -3,
             z: -5,
@@ -248,19 +217,11 @@ mod tests {
 
     #[test]
     fn test_sub_assign() {
-        let mut a = Vec3{
-            x: 3, 
-            y: 2, 
-            z: 1,
-        };
+        let mut a = Vec3 { x: 3, y: 2, z: 1 };
 
-        let b = Vec3{
-            x: 4, 
-            y: 5, 
-            z: 6,
-        };
+        let b = Vec3 { x: 4, y: 5, z: 6 };
 
-        let expected = Vec3{
+        let expected = Vec3 {
             x: -1,
             y: -3,
             z: -5,
@@ -273,122 +234,93 @@ mod tests {
 
     #[test]
     fn test_mul_scalar() {
-        let a = Vec3{
-            x: 3, 
-            y: 2, 
-            z: 1,
-        };
+        let a = Vec3 { x: 3, y: 2, z: 1 };
 
-        let expected = Vec3{
-            x: 6,
-            y: 4,
-            z: 2,
-        };
+        let expected = Vec3 { x: 6, y: 4, z: 2 };
 
         let actual = a * 2;
 
-        assert_eq!(expected, actual, "Vec3 multiplied by scalar should multiply each element by the scalar");
+        assert_eq!(
+            expected, actual,
+            "Vec3 multiplied by scalar should multiply each element by the scalar"
+        );
     }
 
     #[test]
     fn test_mul_assign_scalar() {
-        let mut a = Vec3{
-            x: 3, 
-            y: 2, 
-            z: 1,
-        };
+        let mut a = Vec3 { x: 3, y: 2, z: 1 };
 
-        let expected = Vec3{
-            x: 6,
-            y: 4,
-            z: 2,
-        };
+        let expected = Vec3 { x: 6, y: 4, z: 2 };
 
-         a *= 2;
+        a *= 2;
 
-        assert_eq!(expected, a, "Vec3 multiplied by scalar should multiply each element by the scalar");
+        assert_eq!(
+            expected, a,
+            "Vec3 multiplied by scalar should multiply each element by the scalar"
+        );
     }
 
     #[test]
     fn test_div_scalar() {
-        let a = Vec3{
-            x: 6, 
-            y: 4, 
-            z: 2,
-        };
+        let a = Vec3 { x: 6, y: 4, z: 2 };
 
-        let expected = Vec3{
-            x: 3,
-            y: 2,
-            z: 1,
-        };
+        let expected = Vec3 { x: 3, y: 2, z: 1 };
 
         let actual = a / 2;
 
-        assert_eq!(expected, actual, "Vec3 divided by scalar should divide each element by the scalar");
+        assert_eq!(
+            expected, actual,
+            "Vec3 divided by scalar should divide each element by the scalar"
+        );
     }
 
     #[test]
     fn test_div_assign_scalar() {
-        let mut a = Vec3{
-            x: 6, 
-            y: 4, 
-            z: 2,
-        };
+        let mut a = Vec3 { x: 6, y: 4, z: 2 };
 
-        let expected = Vec3{
-            x: 3,
-            y: 2,
-            z: 1,
-        };
+        let expected = Vec3 { x: 3, y: 2, z: 1 };
 
         a /= 2;
 
-        assert_eq!(expected, a, "Vec3 divided by scalar should divide each element by the scalar");
+        assert_eq!(
+            expected, a,
+            "Vec3 divided by scalar should divide each element by the scalar"
+        );
     }
 
     #[test]
     fn test_mul_by_vector() {
-        let a = Vec3{
-            x: 1, 
-            y: 2, 
-            z: 3,
-        };
+        let a = Vec3 { x: 1, y: 2, z: 3 };
 
-        let b = Vec3{
-            x: 4, 
-            y: 5, 
-            z: 6,
-        };
+        let b = Vec3 { x: 4, y: 5, z: 6 };
 
-        assert_eq!(&a * &b, 32, "Vec3 multiplied by a Vec3 should perform the dot product of the two vectors");
+        assert_eq!(
+            &a * &b,
+            32,
+            "Vec3 multiplied by a Vec3 should perform the dot product of the two vectors"
+        );
     }
 
     #[test]
     fn test_magnitude() {
-        let a = Vec3{
-            x: 3, 
-            y: 2, 
-            z: 1,
-        };
+        let a = Vec3 { x: 3, y: 2, z: 1 };
 
-        assert_eq!(a.magnitude(), (14 as f64).sqrt(), "Vec3 magnitude should correctly calculate the magnitude");
+        assert_eq!(
+            a.magnitude(),
+            (14 as f64).sqrt(),
+            "Vec3 magnitude should correctly calculate the magnitude"
+        );
     }
 
     #[test]
     fn test_negate_vector() {
-        let a = Vec3{
-            x: 3,
-            y: -2,
-            z: 0,
-        };
+        let a = Vec3 { x: 3, y: -2, z: 0 };
 
-        let expected = Vec3{
-            x: -3,
-            y: 2,
-            z: 0,
-        };
+        let expected = Vec3 { x: -3, y: 2, z: 0 };
 
-        assert_eq!(-a, expected, "vector negation should negate each element of the vector")
+        assert_eq!(
+            -a, expected,
+            "vector negation should negate each element of the vector"
+        )
     }
 }

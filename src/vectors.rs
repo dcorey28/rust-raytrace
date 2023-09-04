@@ -37,29 +37,29 @@ impl<N> Number for N where
 {
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Copy, Clone)]
 pub struct Vec3<N> {
     pub x: N,
     pub y: N,
     pub z: N,
 }
 
-type Point<N> = Vec3<N>;
+pub type Point<N> = Vec3<N>;
 
 impl<N: Number> Vec3<N> {
     /// Calculates the magnitude of the vector.
-    pub fn magnitude(&self) -> N {
+    pub fn magnitude(self) -> N {
         let f = self.magnitude_squared().to_f64().unwrap();
         N::from_f64(f.sqrt()).unwrap()
     }
 
     /// Calculates the squared magnitude of the vector.
-    fn magnitude_squared(&self) -> N {
+    fn magnitude_squared(self) -> N {
         self * self
     }
 
     /// Calculates the cross product of two vectors.
-    fn cross(lhs: &Self, rhs: &Self) -> Self {
+    fn cross(lhs: Self, rhs: Self) -> Self {
         Vec3 {
             x: lhs.y * rhs.z - lhs.z * rhs.y,
             y: lhs.z * rhs.x - lhs.x * rhs.z,
@@ -68,7 +68,7 @@ impl<N: Number> Vec3<N> {
     }
 
     /// Calculates the unit vector of the vector.
-    fn unit(&self) -> Self {
+    fn unit(self) -> Self {
         self / self.magnitude()
     }
 }
@@ -130,19 +130,6 @@ impl<N: Number> ops::Div<N> for Vec3<N> {
     }
 }
 
-// Divide a vector by a scalar
-impl<N: Number> ops::Div<N> for &Vec3<N> {
-    type Output = Vec3<N>;
-
-    fn div(self, scalar: N) -> Self::Output {
-        Self::Output {
-            x: self.x / scalar,
-            y: self.y / scalar,
-            z: self.z / scalar,
-        }
-    }
-}
-
 // Divide the current vector by a scalar
 impl<N: Number> ops::DivAssign<N> for Vec3<N> {
     fn div_assign(&mut self, scalar: N) {
@@ -153,7 +140,7 @@ impl<N: Number> ops::DivAssign<N> for Vec3<N> {
 }
 
 // Multiply a vector by a scalar
-impl<N: Number> ops::Mul<N> for &Vec3<N> {
+impl<N: Number> ops::Mul<N> for Vec3<N> {
     type Output = Vec3<N>;
 
     fn mul(self, scalar: N) -> Self::Output {
@@ -175,10 +162,10 @@ impl<N: Number> ops::MulAssign<N> for Vec3<N> {
 }
 
 // Multiply a vector by a vector as the dot product
-impl<N: Number> ops::Mul for &Vec3<N> {
+impl<N: Number> ops::Mul for Vec3<N> {
     type Output = N;
 
-    fn mul(self, other: &Vec3<N>) -> N {
+    fn mul(self, other: Vec3<N>) -> N {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
 }
@@ -262,7 +249,7 @@ mod tests {
 
         let expected = Vec3 { x: 6, y: 4, z: 2 };
 
-        let actual = &a * 2;
+        let actual = a * 2;
 
         assert_eq!(
             expected, actual,
@@ -318,7 +305,7 @@ mod tests {
         let b = Vec3 { x: 4, y: 5, z: 6 };
 
         assert_eq!(
-            &a * &b,
+            a * b,
             32,
             "Vec3 multiplied by a Vec3 should perform the dot product of the two vectors"
         );
@@ -355,7 +342,7 @@ mod tests {
         let expected = Vec3 { x: -3, y: 6, z: -3 };
 
         assert_eq!(
-            Vec3::cross(&a, &b),
+            Vec3::cross(a, b),
             expected,
             "cross product of two 3d vectors should work as expected"
         )

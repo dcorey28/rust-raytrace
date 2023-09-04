@@ -3,19 +3,9 @@ use std::fs::File;
 use std::io::BufWriter;
 use std::io::Write;
 
+mod color;
+mod ray;
 mod vectors;
-mod color {
-    use crate::vectors;
-
-    pub type Color = vectors::Vec3<f64>;
-
-    impl Color {
-        pub fn write(&self, out: &mut impl std::io::Write, saturation: f64) -> std::io::Result<()> {
-            let p = self * saturation;
-            writeln!(out, "{} {} {}", p.x as i64, p.y as i64, p.z as i64)
-        }
-    }
-}
 
 const PPM_IDENTIFIER: &str = "P3";
 const COLOR_SATURATION: f64 = u8::MAX as f64;

@@ -36,7 +36,7 @@ impl<N> Number for N where
 }
 
 #[derive(PartialEq, Debug)]
-pub struct Vec3<N: Number> {
+pub struct Vec3<N> {
     pub x: N,
     pub y: N,
     pub z: N,
@@ -154,16 +154,14 @@ impl<N: Number> ops::Mul for &Vec3<N> {
 }
 
 // Negate the vector
-impl<N: Number> ops::Neg for Vec3<N> {
+impl<N: ops::Neg<Output = N>> ops::Neg for Vec3<N> {
     type Output = Self;
 
     fn neg(self) -> Self::Output {
         Self {
-            // We can't just negate each field with `-self.x` because I can't figure
-            // how to get the compiler to turn `<N as ops::Neg>::Output` back into `N`.
-            x: N::zero() - self.x,
-            y: N::zero() - self.y,
-            z: N::zero() - self.z,
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
         }
     }
 }

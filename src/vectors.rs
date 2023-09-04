@@ -4,6 +4,7 @@ use std::ops;
 pub trait Number:
     num::Num
     + num::NumCast
+    + num::FromPrimitive
     + Clone
     + Copy
     + ops::Add
@@ -21,6 +22,7 @@ pub trait Number:
 impl<N> Number for N where
     N: num::Num
         + num::NumCast
+        + num::FromPrimitive
         + Clone
         + Copy
         + ops::Add
@@ -46,10 +48,9 @@ type Point<N> = Vec3<N>;
 
 impl<N: Number> Vec3<N> {
     /// Calculates the magnitude of the vector.
-    pub fn magnitude(&self) -> f64 {
+    pub fn magnitude(&self) -> N {
         let f = self.magnitude_squared().to_f64().unwrap();
-        println!("mag squared: {}", f);
-        f.sqrt()
+        N::from_f64(f.sqrt()).unwrap()
     }
 
     /// Calculates the squared magnitude of the vector.
@@ -57,13 +58,18 @@ impl<N: Number> Vec3<N> {
         self * self
     }
 
-    /// Calculates the cross product of two vectors
-    fn cross(lhs: &Vec3<N>, rhs: &Vec3<N>) -> Vec3<N> {
+    /// Calculates the cross product of two vectors.
+    fn cross(lhs: &Self, rhs: &Self) -> Self {
         Vec3 {
             x: lhs.y * rhs.z - lhs.z * rhs.y,
             y: lhs.z * rhs.x - lhs.x * rhs.z,
             z: lhs.x * rhs.y - lhs.y * rhs.x,
         }
+    }
+
+    /// Calculates the unit vector of the vector.
+    fn unit(&self) -> Self {
+        self / self.magnitude()
     }
 }
 
@@ -117,6 +123,19 @@ impl<N: Number> ops::Div<N> for Vec3<N> {
 
     fn div(self, scalar: N) -> Self {
         Self {
+            x: self.x / scalar,
+            y: self.y / scalar,
+            z: self.z / scalar,
+        }
+    }
+}
+
+// Divide a vector by a scalar
+impl<N: Number> ops::Div<N> for &Vec3<N> {
+    type Output = Vec3<N>;
+
+    fn div(self, scalar: N) -> Self::Output {
+        Self::Output {
             x: self.x / scalar,
             y: self.y / scalar,
             z: self.z / scalar,
@@ -311,7 +330,7 @@ mod tests {
 
         assert_eq!(
             a.magnitude(),
-            (14 as f64).sqrt(),
+            (14 as f64).sqrt() as i32,
             "Vec3 magnitude should correctly calculate the magnitude"
         );
     }
@@ -339,6 +358,25 @@ mod tests {
             Vec3::cross(&a, &b),
             expected,
             "cross product of two 3d vectors should work as expected"
+        )
+    }
+
+    #[test]
+    fn test_unit_vector() {
+        let a = Vec3 {
+            x: 1.0,
+            y: 1.0,
+            z: 1.0,
+        };
+
+        let u = 1.0 / (3.0 as f64).sqrt();
+
+        let expected = Vec3 { x: u, y: u, z: u };
+
+        assert_eq!(
+            a.unit(),
+            expected,
+            "should calculate the unit vector correctly"
         )
     }
 }

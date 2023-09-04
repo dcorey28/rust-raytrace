@@ -42,6 +42,8 @@ pub struct Vec3<N> {
     pub z: N,
 }
 
+type Point<N> = Vec3<N>;
+
 impl<N: Number> Vec3<N> {
     /// Calculates the magnitude of the vector.
     pub fn magnitude(&self) -> f64 {
@@ -53,6 +55,15 @@ impl<N: Number> Vec3<N> {
     /// Calculates the squared magnitude of the vector.
     fn magnitude_squared(&self) -> N {
         self * self
+    }
+
+    /// Calculates the cross product of two vectors
+    fn cross(lhs: &Vec3<N>, rhs: &Vec3<N>) -> Vec3<N> {
+        Vec3 {
+            x: lhs.y * rhs.z - lhs.z * rhs.y,
+            y: lhs.z * rhs.x - lhs.x * rhs.z,
+            z: lhs.x * rhs.y - lhs.y * rhs.x,
+        }
     }
 }
 
@@ -173,7 +184,6 @@ mod tests {
     #[test]
     fn test_add() {
         let a = Vec3 { x: 1, y: 2, z: 3 };
-
         let b = Vec3 { x: 4, y: 5, z: 6 };
 
         let expected = Vec3 { x: 5, y: 7, z: 9 };
@@ -186,7 +196,6 @@ mod tests {
     #[test]
     fn test_add_assign() {
         let mut a = Vec3 { x: 1, y: 2, z: 3 };
-
         let b = Vec3 { x: 4, y: 5, z: 6 };
 
         let expected = Vec3 { x: 5, y: 7, z: 9 };
@@ -199,7 +208,6 @@ mod tests {
     #[test]
     fn test_sub() {
         let a = Vec3 { x: 3, y: 2, z: 1 };
-
         let b = Vec3 { x: 4, y: 5, z: 6 };
 
         let expected = Vec3 {
@@ -216,7 +224,6 @@ mod tests {
     #[test]
     fn test_sub_assign() {
         let mut a = Vec3 { x: 3, y: 2, z: 1 };
-
         let b = Vec3 { x: 4, y: 5, z: 6 };
 
         let expected = Vec3 {
@@ -289,7 +296,6 @@ mod tests {
     #[test]
     fn test_mul_by_vector() {
         let a = Vec3 { x: 1, y: 2, z: 3 };
-
         let b = Vec3 { x: 4, y: 5, z: 6 };
 
         assert_eq!(
@@ -319,6 +325,20 @@ mod tests {
         assert_eq!(
             -a, expected,
             "vector negation should negate each element of the vector"
+        )
+    }
+
+    #[test]
+    fn test_cross_product() {
+        let a = Vec3 { x: 1, y: 2, z: 3 };
+        let b = Vec3 { x: 4, y: 5, z: 6 };
+
+        let expected = Vec3 { x: -3, y: 6, z: -3 };
+
+        assert_eq!(
+            Vec3::cross(&a, &b),
+            expected,
+            "cross product of two 3d vectors should work as expected"
         )
     }
 }

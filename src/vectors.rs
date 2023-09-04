@@ -153,11 +153,11 @@ impl<N: Number> ops::DivAssign<N> for Vec3<N> {
 }
 
 // Multiply a vector by a scalar
-impl<N: Number> ops::Mul<N> for Vec3<N> {
-    type Output = Self;
+impl<N: Number> ops::Mul<N> for &Vec3<N> {
+    type Output = Vec3<N>;
 
-    fn mul(self, scalar: N) -> Self {
-        Self {
+    fn mul(self, scalar: N) -> Self::Output {
+        Self::Output {
             x: self.x * scalar,
             y: self.y * scalar,
             z: self.z * scalar,
@@ -262,7 +262,7 @@ mod tests {
 
         let expected = Vec3 { x: 6, y: 4, z: 2 };
 
-        let actual = a * 2;
+        let actual = &a * 2;
 
         assert_eq!(
             expected, actual,

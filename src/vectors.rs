@@ -54,12 +54,12 @@ impl<N: Number> Vec3<N> {
     }
 
     /// Calculates the squared magnitude of the vector.
-    fn magnitude_squared(self) -> N {
+    pub fn magnitude_squared(self) -> N {
         self * self
     }
 
     /// Calculates the cross product of two vectors.
-    fn cross(lhs: Self, rhs: Self) -> Self {
+    pub fn cross(lhs: Self, rhs: Self) -> Self {
         Vec3 {
             x: lhs.y * rhs.z - lhs.z * rhs.y,
             y: lhs.z * rhs.x - lhs.x * rhs.z,
@@ -68,8 +68,16 @@ impl<N: Number> Vec3<N> {
     }
 
     /// Calculates the unit vector of the vector.
-    fn unit(self) -> Self {
+    pub fn unit(self) -> Self {
         self / self.magnitude()
+    }
+
+    pub fn zero() -> Self {
+        Self {
+            x: N::zero(),
+            y: N::zero(),
+            z: N::zero(),
+        }
     }
 }
 

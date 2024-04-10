@@ -86,7 +86,7 @@ mod tests {
                 y: 2.5,
                 z: 2.0,
             },
-            "at(1.0) should advance a full step in each direction"
+            "at(1.0) should advance a full step"
         );
         assert_eq!(
             r.at(0.5),
@@ -95,7 +95,7 @@ mod tests {
                 y: 2.25,
                 z: 2.5,
             },
-            "at(0.5) should advance a half step in each direction"
+            "at(0.5) should advance a half step"
         );
         assert_eq!(
             r.at(-1.0),
@@ -104,7 +104,7 @@ mod tests {
                 y: 1.5,
                 z: 4.0,
             },
-            "at(1.0) should advance a full step in backwards in each direction"
+            "at(-1.0) should regress a full step"
         );
     }
 }
